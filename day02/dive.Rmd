@@ -1,0 +1,76 @@
+---
+title: "Advent of Code 2021 Day 2: Dive!"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data 
+
+```{r}
+direction_levels <- c("forward", "down", "up")
+commands <- read_delim("input.txt", col_types = cols(col_factor(direction_levels), col_integer()), col_names = FALSE)
+```
+
+## Part 1
+
+```{r}
+commands %>% 
+  mutate(
+    horiz_delta = ifelse(X1=='forward', X2, 0),
+    depth_delta = ifelse(X1=='forward', 0, ifelse(X1=='up', -X2, X2)),
+    horiz = cumsum(horiz_delta),
+    depth = cumsum(depth_delta),
+    product = horiz * depth,
+  ) %>%
+  select(product) %>%
+  tail(1)
+```
+
+
+(This was my original solution. I wrote the above solution after doing part 2)
+```{r}
+totals <- commands %>% 
+  group_by(X1) %>% 
+  summarize(sum(X2))
+
+forward <- totals %>% 
+  filter(X1=="forward") %>%
+  pull
+up <- totals %>% 
+  filter(X1=="up") %>%
+  pull
+down <- totals %>% 
+  filter(X1=="down") %>%
+  pull
+
+forward * (down - up)
+```
+
+## Part 2
+
+plan:
+add a column for cumulative horiz sum
+add a column to track current aim
+then add a column for aim * X
+then add a column for cumulative vertical sum 
+
+```{r}
+commands %>% 
+  mutate(
+    horiz_delta = ifelse(X1=='forward', X2, 0),
+    aim_delta = ifelse(X1=='forward', 0, ifelse(X1=='up', -X2, X2)),
+    aim = cumsum(aim_delta),
+    depth_delta = horiz_delta * aim,
+    horiz = cumsum(horiz_delta),
+    depth = cumsum(depth_delta),
+    product = horiz * depth,
+  ) %>%
+  select(product) %>%
+  tail(1)
+```
+

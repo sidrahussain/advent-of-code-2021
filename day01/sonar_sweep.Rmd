@@ -1,0 +1,42 @@
+---
+title: "Advent of Code 2021 Day 1: Sonar Sweep"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data 
+
+```{r}
+depths <- read_csv("input.txt", col_types = cols(col_integer()), col_names = FALSE)
+```
+
+## Part 1 
+
+```{r}
+count_increases <- function(data) {
+  reduce2(slice(data, 1:length(data[[1]])-1)[[1]], slice(data, 2:length(data[[1]]))[[1]], function(total, x, y) {if(x<y) {total + 1} else {total}}, .init = 0)
+}
+depths %>% count_increases()
+```
+
+After doing day 2, I think I can rewrite this in a better way: 
+```{r}
+depths %>% filter(X1<lead(X1)) %>% count()
+```
+
+
+## Part 2
+
+```{r}
+library(slider)
+aggregated_depths <- depths %>% 
+  slide_vec(sum, .before = 1, .after = 1, .complete = TRUE)
+aggregated_depths <- tibble(X1 = aggregated_depths) %>%
+   filter(!is.na(aggregated_depths))
+aggregated_depths %>% count_increases()
+```
