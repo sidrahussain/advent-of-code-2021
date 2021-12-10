@@ -1,0 +1,69 @@
+---
+title: "Advent of Code 2021 Day 3: Binary Diagnostic"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data
+
+
+```{r}
+#report <- read_fwf("example_input.txt", fwf_widths(rep(1, 5)))
+report <- read_fwf("input.txt", fwf_widths(rep(1, 12)))
+```
+would be cool to not hardcode line length, but I'm just gonna go with this 
+
+## Part 1
+
+```{r}
+binary_tibble_row_to_integer <- function (n) {
+  n %>%
+    unite(x, sep = '') %>%
+    strtoi(base = 2)
+}
+```
+
+
+```{r}
+medians <- report %>% summarize_all(median)
+gamma <- medians %>% 
+  binary_tibble_row_to_integer()
+epsilon <- medians %>% 
+  mutate_all(function (x) { 1 - x }) %>%
+  binary_tibble_row_to_integer()
+gamma * epsilon
+```
+
+
+## Part 2
+
+```{r}
+oxy_criteria <- function (c) {
+  ceiling(median(c))
+}
+
+co2_criteria <- function (c) {
+  1 - oxy_criteria(c)
+}
+
+find_rating <- function (report, criteria_fn) {
+  filtered_report <- report
+  for (i in seq_along(filtered_report)) {
+    filtered_report <- filtered_report %>% filter(filtered_report[i]==criteria_fn(filtered_report[[i]]))
+    if (nrow(filtered_report) == 1) {
+      break
+    }
+  }
+  binary_tibble_row_to_integer(filtered_report)
+}
+```
+
+```{r}
+find_rating(report, oxy_criteria) * find_rating(report, co2_criteria)
+```
+
