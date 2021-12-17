@@ -1,0 +1,80 @@
+---
+title: "Advent of Code 2021 Day 10: Syntax Scoring"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data
+
+```{r}
+chunks <- read_delim("input.txt", delim = ' ', col_names = FALSE)
+```
+
+## Part 1
+
+```{r}
+get_matching_opener <- function (ch) {
+  if (ch == ')') '('
+  else if (ch == ']') '['
+  else if (ch == '}') '{'
+  else if (ch == '>') '<'
+}
+
+get_illegal_char <- function (chunk) {
+  chunk_vector <- str_split(chunk, '')[[1]]
+  openers <- c('(', '[', '{', '<')
+  string <- character(0)
+  for (ch in chunk_vector) {
+    if (ch %in% openers) {
+      string <- append(string, ch)
+    } else {
+      matching_opener <- get_matching_opener(ch)
+      if (length(string) == 0 || string[length(string)] != matching_opener)  {
+        return(ch)
+      } else {
+        string <- string[1:length(string) - 1]
+      }
+    }
+  }
+  'okay'
+}
+```
+
+```{r}
+#chunks %>% mutate(x=get_illegal_char(X1))
+```
+not sure why but that doesn't work. seems like it just calls it on the first row and gives the result to all rows. will try a less nice option 
+
+```{r}
+value <- 0
+for (chunk in chunks$X1) {
+  illegal_char <- get_illegal_char(chunk)
+  if (illegal_char == ')') {
+    value <- value + 3
+  } else if (illegal_char == ']') {
+    value <- value + 57
+  } else if (illegal_char == '}') {
+    value <- value + 1197
+  } else if (illegal_char == '>') {
+    value <- value + 25137
+  } 
+}
+value
+```
+
+    ): 3 points.
+    ]: 57 points.
+    }: 1197 points.
+    >: 25137 points.
+
+
+## Part 2
+
+```{r}
+
+```

@@ -1,0 +1,52 @@
+---
+title: "Advent of Code 2021 Day 7: The Treachery of Whales"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data
+
+```{r}
+crab_positions <- read_csv("input.txt", col_names = FALSE) %>% 
+  rownames_to_column() %>% 
+  pivot_longer(-rowname, 'col', 'value') %>% 
+  select(value)
+```
+
+## Part 1
+
+```{r}
+max_pos <- max(crab_positions)
+min_fuel <- Inf
+for (i in seq(max_pos)) { # doesn't work if max_pos is 0 but oh well 
+  fuel_cost <- sum(abs(i - crab_positions))
+  if (fuel_cost < min_fuel) {
+    min_fuel <- fuel_cost
+  }
+}
+min_fuel
+```
+
+## Part 2
+
+```{r}
+triangle_number <- function (n) {
+  n * (n + 1) / 2
+}
+
+max_pos <- max(crab_positions)
+min_fuel <- Inf
+for (i in seq(max_pos)) { # doesn't work if max_pos is 0 but oh well 
+  fuel_cost <- sum(triangle_number(abs(i - crab_positions)))
+  if (fuel_cost < min_fuel) {
+    min_fuel <- fuel_cost
+  }
+}
+min_fuel
+```
+

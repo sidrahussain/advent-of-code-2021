@@ -1,0 +1,27 @@
+---
+title: "Advent of Code 2021 Day 8: Seven Segment Search"
+output: html_notebook
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+### Import data
+
+```{r}
+notes <- read_delim("input.txt", delim= ' ', col_names = FALSE)
+signal_patterns <- select(notes, 1:10)
+output_digits <- select(notes, 12:15)
+```
+
+## Part 1
+
+```{r}
+output_digits %>% mutate_all(str_length) %>% mutate_all(function (x){ x %in% c(2, 4, 3, 7) }) %>% mutate_all(as.numeric) %>% sum
+```
+
+## Part 2
+
